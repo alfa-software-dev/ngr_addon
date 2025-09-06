@@ -39,7 +39,8 @@
         'views/sale_order_.xml',
         'views/stock_.xml',
         'views/account_journal_.xml',
-        'views/account_move_.xml'
+        'views/account_move_.xml',
+        'views/stock_quant_package_.xml',
     ],
 
 }

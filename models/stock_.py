@@ -44,6 +44,8 @@ class AccountJournal(models.Model):
                 related_sequence_object.unlink()
                 
         return super(AccountJournal, self).unlink()
+
+
 class StockWarehouse(models.Model):
     """
     Extended Stock Warehouse Model for NVE (Nummer der Versandeinheit) Support
@@ -187,9 +189,9 @@ class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
     # NVE field - The shipping unit number
-    # Readonly to prevent manual modification, copy=False to avoid duplication
-    nve = fields.Char(string='NVE', readonly=True, copy=False,
-                     help='Nummer der Versandeinheit - Shipping unit number')
+    # # Readonly to prevent manual modification, copy=False to avoid duplication
+    # nve = fields.Char(string='NVE', readonly=True, copy=False,
+    #                  help='Nummer der Versandeinheit - Shipping unit number')
     picking_type_code = fields.Selection(related='picking_type_id.code')
     
     account_journal_id = fields.Many2one('account.journal', string='Account Journal')
@@ -242,7 +244,7 @@ class StockPicking(models.Model):
 
     def _compute_nve(self):
         """
-        Calculate and assign NVE for the picking.
+        Calculate and assign NVE for each package only for packages .
         
         NVE Structure (18 digits total):
         1. NVE Prefix (1 digit): From warehouse configuration
@@ -252,20 +254,24 @@ class StockPicking(models.Model):
         
         Example: 0 + 1234567 + 000000001 + 3 = 012345670000000013
         """
-        self.ensure_one()
-
         warehouse = self.picking_type_id.warehouse_id
         
         # Verify all required fields are present
         if not all([warehouse, warehouse.gln, warehouse.nve_prefix, warehouse.sequence_id]):
             return
-
-        # Get next sequence number and build NVE
-        reference = warehouse.sequence_id.next_by_id()
-        sequence = warehouse.nve_prefix + warehouse.gln + reference
-        check_digit = self._calculate_check_digit(sequence)
         
-        self.nve = sequence + str(check_digit)
+        # Get all result packages from move lines
+        result_packages = self.move_line_ids.mapped('result_package_id')
+        result_packages = result_packages.filtered(lambda p: p)  # Remove empty records
+        
+        # Generate NVE for each result package
+        for package in result_packages:
+            if not package.nve:  # Only generate if NVE doesn't exist
+                # Get next sequence number and build NVE
+                reference = warehouse.sequence_id.next_by_id()
+                sequence = warehouse.nve_prefix + warehouse.gln + reference
+                check_digit = self._calculate_check_digit(sequence)
+                package.nve = sequence + str(check_digit)
 
     def _calculate_check_digit(self, sequence):
         """

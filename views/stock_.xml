@@ -11,17 +11,17 @@
         </field>
     </record>
 
-  <record model="ir.ui.view" id="adding_nve_field">
-        <field name="name">Adding NVE Field</field>
-        <field name="model">stock.picking</field>
-        <field name="inherit_id" ref="stock_delivery.view_picking_withcarrier_out_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//div[@name='tracking']" position="after">
-                <field name="nve" invisible="not activate_nve or picking_type_code != 'outgoing'"/>
-            </xpath>
-            <xpath expr="//header" position="inside">
-                <button name="action_nve_report" string="Print NVE" invisible="not activate_nve or not nve" type="object"/>
-            </xpath>
-        </field>
-    </record>
+<!--  <record model="ir.ui.view" id="adding_nve_field">-->
+<!--        <field name="name">Adding NVE Field</field>-->
+<!--        <field name="model">stock.picking</field>-->
+<!--        <field name="inherit_id" ref="stock_delivery.view_picking_withcarrier_out_form"/>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <xpath expr="//div[@name='tracking']" position="after">-->
+<!--                <field name="nve" invisible="not activate_nve or picking_type_code != 'outgoing'"/>-->
+<!--            </xpath>-->
+<!--            <xpath expr="//header" position="inside">-->
+<!--                <button name="action_nve_report" string="Print NVE" invisible="not activate_nve or not nve" type="object"/>-->
+<!--            </xpath>-->
+<!--        </field>-->
+<!--    </record>-->
 </odoo>
