@@ -1,0 +1,192 @@
+<odoo>
+    <record id="pageformat_for_nve_barcode_report" model="report.paperformat">
+        <field name="name">NVE Reports</field>
+        <field name="format">custom</field>
+        <field name="page_height">148</field> <!-- Round or cast to integer -->
+        <field name="page_width">105</field>  <!-- Round or cast to integer -->
+        <field name="orientation">Portrait</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="nve_barcode_report" model="ir.actions.report">
+        <field name="name">NVE Report</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="paperformat_id" ref="ngr_addon.pageformat_for_nve_barcode_report"/>
+        <field name="report_name">ngr_addon.nve_report_template</field>
+        <field name="report_file">ngr_addon.nve_report_template</field>
+    </record>
+
+
+    <template id="minimal_layout" inherit_id="web.minimal_layout" priority="100">
+        <script t-if="subst" position="replace">
+            <script t-if="subst">
+                function subst() {
+                var vars = {};
+                var x = document.location.search.substring(1).split('&amp;');
+                for (var i in x) {
+                var z = x[i].split('=', 2);
+                vars[z[0]] = unescape(z[1]);
+                }
+                var x = ['sitepage', 'sitepages', 'section', 'subsection', 'subsubsection'];
+                var z = {'sitepage': 'page', 'sitepages': 'topage'};
+                for (var i in x) {
+                var y = document.getElementsByClassName(z[x[i]] || x[i])
+                for (var j=0; j&lt;y.length; ++j)
+                y[j].textContent = vars[x[i]];
+                }
+
+                var index = vars['webpage'].split('.', 4)[3];
+                var header = document.getElementById('minimal_layout_report_headers');
+                if(header){
+                var companyHeader = header.children[index];
+                header.textContent = '';
+                header.appendChild(companyHeader);
+                }
+                var footer = document.getElementById('minimal_layout_report_footers');
+                if(footer){
+                var companyFooter = footer.children[index];
+                footer.textContent = '';
+                footer.appendChild(companyFooter);
+                }
+
+                var operations = {
+                'not-first-page': function (elt) {
+                elt.style.visibility = (vars.sitepage == vars.frompage) ? "hidden" : "visible";
+                },
+                'not-last-page': function (elt) {
+                elt.style.visibility = (vars.sitepage == vars.sitepages) ? "hidden" : "visible";
+                },
+                'first-page': function (elt) {
+                elt.style.visibility = (vars.sitepage == vars.frompage) ? "visible" : "hidden";
+                },
+                'last-page': function (elt) {
+                elt.style.visibility = (vars.sitepage == vars.sitepages) ? "visible" : "hidden";
+                },
+                'single-page': function (elt) {
+                elt.style.display = (vars.sitepages === 1) ? "inherit" : "none";
+                },
+                'multi-page': function (elt) {
+                elt.style.display = (vars.sitepages > 1) ? "inherit" : "none";
+                },
+                };
+                for (var klass in operations) {
+                var y = document.getElementsByClassName(klass);
+                for (var j=0; j&lt;y.length; ++j)
+                operations[klass](y[j]);
+                }
+                }
+            </script>
+        </script>
+    </template>
+
+    <template id="ngr_addon.nve_report_layout">
+        <!-- Add CSS styles for better formatting -->
+        <style>
+            .nve-header {
+            border-bottom: 2px solid #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            }
+
+            .address-title {
+            font-weight: bold;
+            font-size: 11pt;
+            margin-bottom: 5px;
+            }
+        </style>
+
+        <div class="header nve-header">
+            <t t-set="template" t-value="doc.label_template()"/>
+            <table style="width: 100%; border-collapse: separate;">
+                <tr>
+                    <td style="width: 20%;  padding-top:15px; padding-bottom:15px; text-align:right;">
+                        <img src="/ngr_addon/static/description/ngr_logo2.png"
+                             alt="NGR Logo" style="width: 100%; height: auto;"/>
+                    </td>
+
+                    <td style="width: 50%; padding: 5px; vertical-align: top;">
+                        <div class="address-title">
+                            <t t-out="template['addresses']['sender']"/>
+                        </div>
+                        <div style="font-size:10pt;line-height: 1.4;">
+                            <t t-out="doc.company_id.partner_id.name"/><br/>
+                            <t t-out="doc.company_id.partner_id.street"/><br/>
+                            <t t-out="doc.company_id.partner_id.zip"/>
+                            <t t-if="doc.company_id.partner_id.city">
+                                <t t-out="doc.company_id.partner_id.city"/>
+                            </t><br/>
+                            <t t-if="doc.company_id.partner_id.country_id">
+                                <t t-out="doc.company_id.partner_id.country_id.name"/>
+                            </t>
+                        </div>
+                    </td>
+
+                    <td style="width: 30%; padding: 5px; vertical-align: top;">
+                        <div class="address-title">
+                            <t t-out="template['addresses']['recipient']"/>
+                        </div>
+                        <div style="font-size:10pt;line-height: 1.4;">
+                            <t t-out="doc.partner_id.name"/><br/>
+                            <t t-if="doc.partner_id.street">
+                                <t t-out="doc.partner_id.street"/><br/>
+                            </t>
+                            <t t-if="doc.partner_id.zip">
+                                <t t-out="doc.partner_id.zip"/>
+                            </t>
+                            <t t-if="doc.partner_id.city">
+                                <t t-out="doc.partner_id.city"/>
+                            </t><br/>
+                            <t t-if="doc.partner_id.country_id">
+                                <t t-out="doc.partner_id.country_id.name"/>
+                            </t>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+        <div class="article o_report_layout_standard">
+            <t t-out="0"/>
+        </div>
+    </template>
+
+    <template id="nve_report_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="ngr_addon.nve_report_layout">
+                    <div class="page">
+                        <!-- NVE Barcode Section -->
+                        <div style="text-align:center;padding-top:130pt">
+                            <table style="border-collapse:separate;">
+                                <tr>
+                                    <td>
+                                        <div style="text-align:right;font-size:20pt; padding-left:40px;">
+                                            N <br/>
+                                            V <br/>
+                                            E <br/>
+                                        </div>
+
+                                    </td>
+                                    <td style="vertical-align:bottom">
+                                        <img t-attf-src="/report/barcode/Code128/{{doc.nve}}" alt="QR Code"/>
+                                        <div style="font-size:12pt; margin-top:5px;">
+                                            <t t-out="doc.nve"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
+

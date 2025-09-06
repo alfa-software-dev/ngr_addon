@@ -1,0 +1,289 @@
+<odoo>
+    <record id="pageformat_for_invoice_report" model="report.paperformat">
+        <field name="name">Custom Invoice report</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_bottom">50</field>
+    </record>
+
+
+    <record id="account.account_invoices" model="ir.actions.report">
+        <field name="report_name">ngr_addon.de_invoice_report</field>
+        <field name="paperformat_id" ref="ngr_addon.pageformat_for_invoice_report"/>
+
+    </record>
+
+
+    <template id="minimal_layout" inherit_id="web.minimal_layout" priority="100">
+        <script t-if="subst" position="replace">
+            <script t-if="subst">
+                function subst() {
+                var vars = {};
+                var x = document.location.search.substring(1).split('&amp;');
+                for (var i in x) {
+                var z = x[i].split('=', 2);
+                vars[z[0]] = unescape(z[1]);
+                }
+                var x = ['sitepage', 'sitepages', 'section', 'subsection', 'subsubsection'];
+                var z = {'sitepage': 'page', 'sitepages': 'topage'};
+                for (var i in x) {
+                var y = document.getElementsByClassName(z[x[i]] || x[i])
+                for (var j=0; j&lt;y.length; ++j)
+                y[j].textContent = vars[x[i]];
+                }
+
+                var index = vars['webpage'].split('.', 4)[3];
+                var header = document.getElementById('minimal_layout_report_headers');
+                if(header){
+                var companyHeader = header.children[index];
+                header.textContent = '';
+                header.appendChild(companyHeader);
+                }
+                var footer = document.getElementById('minimal_layout_report_footers');
+                if(footer){
+                var companyFooter = footer.children[index];
+                footer.textContent = '';
+                footer.appendChild(companyFooter);
+                }
+
+                var operations = {
+                'not-first-page': function (elt) {
+                elt.style.visibility = (vars.sitepage == vars.frompage) ? "hidden" : "visible";
+                },
+                'not-last-page': function (elt) {
+                elt.style.visibility = (vars.sitepage == vars.sitepages) ? "hidden" : "visible";
+                },
+                'first-page': function (elt) {
+                elt.style.visibility = (vars.sitepage == vars.frompage) ? "visible" : "hidden";
+                },
+                'last-page': function (elt) {
+                elt.style.visibility = (vars.sitepage == vars.sitepages) ? "visible" : "hidden";
+                },
+                'single-page': function (elt) {
+                elt.style.display = (vars.sitepages === 1) ? "inherit" : "none";
+                },
+                'multi-page': function (elt) {
+                elt.style.display = (vars.sitepages > 1) ? "inherit" : "none";
+                },
+                };
+                for (var klass in operations) {
+                var y = document.getElementsByClassName(klass);
+                for (var j=0; j&lt;y.length; ++j)
+                operations[klass](y[j]);
+                }
+                }
+            </script>
+        </script>
+    </template>
+
+    <template id="invoice_layout">
+        <div class="header">
+            <div style="text-align:right; margin-top: 30pt;">
+                <img src="/ngr_addon/static/description/ngr_logo.png" alt="NGR Logo"
+                     style="width: 150pt; height: auto;"/>
+
+                <div>
+                    <strong>NGR Dynamic Solution GmbH</strong>
+                </div>
+                <t t-set="right_offset" t-value="'65px' if docs.partner_id.lang == 'de_DE' else '45px'"/>
+                <div t-att-style="'float:right;position:relative;right:%s' % right_offset">
+                    <div style="text-align:left;margin-bottom:20pt;font-size:10pt;">
+                        Mainzer Str. 3<br/>
+                        55299 Nackenheim<br/>
+                        info@dyn-solution.de<br/>
+                        <t t-out="lang_template['title'][2]"/><br/>
+                        <t t-out="lang_template['title'][3]"/><br/>
+                        <br/>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+        <div class="article o_report_layout_standard">
+            <t t-out="0"/>
+        </div>
+        <div class="footer o_standard_footer last-page" style="min-height: 100pt;">
+            <hr/>
+            <table style="width: 100%; font-size:10pt; margin-top: 20pt;border-collapse:separate">
+                <tr>
+                    <td style="width: 33%; vertical-align: top;">
+                        <p style="margin: 0; white-space: pre-line;"><t
+                                t-out="lang_template['footer_company']['left']"/></p>
+                    </td>
+                    <td style="width: 34%; vertical-align: top; text-align: center;">
+                        <p style="margin: 0; white-space: pre-line;"><t
+                                t-out="lang_template['footer_company']['center']"/></p>
+                    </td>
+                    <td style="width: 33%; vertical-align: top; text-align: right;">
+                        <p style="margin: 0; white-space: pre-line;"><t
+                                t-out="lang_template['footer_company']['right']"/></p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </template>
+
+
+    <template id="de_invoice_report">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="ngr_addon.invoice_layout">
+                    <link rel="stylesheet"
+                          t-att-href="'/ngr_addon/static/src/css/invoice.css'"/>
+                    <div class="page">
+                        <!-- Address Header -->
+                        <div style="margin-bottom: 30pt;">
+                            <p style="font-size: 10pt; margin-bottom: 5pt;">
+                                NGR Dynamic Solution GmbH | Mainzer Str. 3 | 55299 Nackenheim
+                            </p>
+
+                            <!-- Two column layout -->
+                            <table style="width: 100%; margin-top:15pt;border-collapse:separate;">
+                                <tr>
+                                    <td style="width: 50%; vertical-align: top;">
+                                        <!-- Customer Address -->
+                                        <div style="font-size: 11pt;">
+                                            <t t-out="doc.partner_id.name"/><br/>
+                                            <t t-out="doc.partner_id.street"/><br/>
+                                            <t t-out="doc.partner_id.zip"/>
+                                            <t t-if="doc.partner_id.city"><t t-out="doc.partner_id.city"/></t><br/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <!--                            Define Used  Template Language either English or Germany-->
+
+                            <!-- <t t-set="lang_template" t-value="doc.get_invoice_template_based_on_lang()"/>
+                            <t t-set="right_offset" t-value="'-5px' if docs.partner_id.lang == 'de_DE' else '22px'"/> -->
+
+                            <t t-set="lang_template" t-value="doc.get_invoice_template_based_on_lang()"/>
+                            <t t-set="right_offset" t-value="'-5px' if docs.partner_id.lang == 'de_DE' else '22px'"/>
+                            <t t-if="doc.move_type == 'out_refund'">
+                            <t t-set="right_offset" t-value="'-2px'"/>
+                            </t>
+
+                            <br/>
+                            <div t-att-style="'float:right;position:relative;right:%s;margin-bottom:20pt;margin-top:20pt'%right_offset">
+                                <div style="text-align:left;font-size:10pt;">
+                                    <t t-if="doc.move_type == 'out_invoice'">
+                                        <t t-out="lang_template['invoice_details'][0]"/> :<t
+                                            t-out="doc.get_invoice_date()"/><br/>
+                                    </t>
+                                    <t t-if="doc.move_type == 'out_refund'">
+                                        <t t-out="lang_template['invoice_details'][1]"/> :<t
+                                            t-out="doc.get_invoice_date()"/><br/>
+                                    </t>
+                                    <t t-out="lang_template['invoice_details'][2]"/>.: <t
+                                        t-out="doc.invoice_origin or ''"/><br/>
+                                    <t t-out="lang_template['invoice_details'][3]"/>: <t
+                                        t-out="doc.get_invoice_date()"/>
+                                    <br/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Invoice/Credit Note Title -->
+
+                        <div style="margin: 30pt 0 20pt 0;">
+                            <t t-if="doc.move_type == 'out_invoice'">
+                                <h6 style="font-weight: bold;"><t
+                                        t-out="lang_template['title'][0]"/><t t-out="doc.git_move_sequence()"/></h6>
+                            </t>
+                            <t t-if="doc.move_type == 'out_refund'">
+                                <h6 style="font-weight: bold;"><t
+                                        t-out="lang_template['title'][1]"/><t t-out="doc.git_move_sequence()"/></h6>
+                            </t>
+                        </div>
+
+
+                        <table class="invoice-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10%;"><t t-out="lang_template['headers'][0]"/></th>
+                                    <th style="width: 10%;"><t t-out="lang_template['headers'][1]"/></th>
+                                    <th style="width: 10%;"><t t-out="lang_template['headers'][2]"/></th>
+                                    <th style="width: 40%;"><t t-out="lang_template['headers'][3]"/></th>
+                                    <th style="width: 15%; text-align: right;"><t
+                                            t-out="lang_template['headers'][4]"/></th>
+                                    <th style="width: 15%; text-align: right;"><t
+                                            t-out="lang_template['headers'][5]"/></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <t t-set="tax_name" t-value="doc.invoice_line_ids[0].tax_ids.name"/>
+                                <t t-foreach="doc.invoice_line_ids" t-as="line">
+                                    <tr>
+                                        <td><t t-out="line_index + 1"/></td>
+                                        <td><t t-out="int(line.quantity)"/></td>
+                                        <td>Stück</td>
+                                        <td><t t-out="line.product_id.name"/></td>
+                                        <td style="text-align: right;">
+                                            <t t-if="doc.move_type == 'out_refund'">-</t><t
+                                                t-out="doc.item_price_with_tax(line)"/>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <t t-if="doc.move_type == 'out_refund'">-</t><t
+                                                t-out="doc.get_formatted_amount(line.price_total)"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <!-- Totals Section -->
+                        <div style="margin-top: 30pt; text-align: right;">
+
+                            <table style="width: 40%; margin-left: auto;border-collapse:separate;">
+                                <tr>
+                                    <td style="padding: 5pt; text-align: left;"><t t-out="lang_template['totals'][0]"/>
+                                        :</td>
+                                    <td style="padding: 5pt; text-align: right;">
+                                        <t t-if="doc.move_type == 'out_refund'">-</t><t
+                                            t-out="doc.get_formatted_amount(doc.amount_untaxed)"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 5pt; text-align: left;"><t
+                                            t-out="lang_template['totals'][1]"/> <t t-out="tax_name"/> :</td>
+                                    <td style="padding: 5pt; text-align: right;">
+                                        <t t-if="doc.move_type == 'out_refund'">-</t><t
+                                            t-out="doc.get_formatted_amount(doc.amount_tax)"/>
+                                    </td>
+                                </tr>
+                                <tr style="font-weight: bold; font-size: 12pt;">
+                                    <td style="padding: 5pt; text-align: left;"><t
+                                            t-out="lang_template['totals'][2]"/></td>
+                                    <td style="padding: 5pt; text-align: right;">
+                                        <t t-if="doc.move_type == 'out_refund'">-</t><t
+                                            t-out="doc.get_formatted_amount(doc.amount_total)"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <!-- Payment/Booking Status -->
+                        <div style="margin-top: 20pt;">
+                            <t t-if="doc.move_type == 'out_invoice'">
+                                <p style="font-size: 11pt;"><t t-out="lang_template['payment_text']"/></p>
+                            </t>
+                            <t t-if="doc.move_type == 'out_refund'">
+                                <p style="font-size: 11pt;"><t t-out="lang_template['credit_text']"/></p>
+                            </t>
+                        </div>
+
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+
+    <record id="account.account_invoices" model="ir.actions.report">
+        <field name="report_name">ngr_addon.de_invoice_report</field>
+    </record>
+
+</odoo>
+

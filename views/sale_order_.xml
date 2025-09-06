@@ -1,0 +1,23 @@
+<odoo>
+    <record model="ir.ui.view" id="adding_marketplace_field">
+        <field name="name">Adding Marketplace Field</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="market_place" string="Marketplace" readonly="state=='sale'"/>
+            </xpath>
+        </field>
+    </record>
+    
+     <record model="ir.ui.view" id="adding_marketplace_field_tree">
+        <field name="name">Adding Marketplace Field in Tree</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="market_place" string="Marketplace"  readonly="state=='sale'"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,13 @@
+<odoo>
+    <record model="ir.ui.view" id="adding_delivery_field">
+        <field name="name">Adding Delivery Field</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='delivery_date']" position="before">
+                <field name="delivery_seq"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

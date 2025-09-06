@@ -1,0 +1,77 @@
+    .page {
+      font-family: Arial, sans-serif;
+      font-size: 11pt;
+      margin: 20px;
+      color: #000;
+    }
+
+    .company-info {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .customer-address, .invoice-info {
+      margin-bottom: 20px;
+    }
+
+    .invoice-info table {
+      width: 100%;
+      border-collapse: separate;
+    }
+
+    .invoice-info td {
+      padding: 4px;
+    }
+
+    table.invoice-table {
+      width: 100%;
+      border-collapse: separate;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    table.invoice-table thead th {
+      font-weight: bold;
+      text-align: left;
+      border-style:hidden;
+      border-bottom: 2px solid #000;
+      padding: 8px 4px;
+      font-size: 11pt;
+    }
+
+    table.invoice-table tbody tr {
+      border-bottom: none;
+    }
+
+    table.invoice-table td {
+      padding: 8px 4px;
+      vertical-align: top;
+      font-size: 11pt;
+    }
+
+    .totals {
+      border-collapse: separate;
+      margin-top: 20px;
+      width: 100%;
+    }
+
+    .totals td {
+      padding: 4px;
+      text-align: right;
+    }
+
+    .footer {
+      margin-top: 40px;
+      font-size: 9pt;
+      border-top: 1px solid #ccc;
+      padding-top: 10pt;
+    }
+
+    .bold {
+      font-weight: bold;
+    }
+
+    h2 {
+      margin: 0;
+      padding: 0;
+    }

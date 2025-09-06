@@ -1,0 +1,13 @@
+<odoo>
+
+     <record model="ir.ui.view" id="adding_marketplace_field_form">
+        <field name="name">Adding Activate NVE Field in form</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='code']" position="after">
+                <field name="activate_nve"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
