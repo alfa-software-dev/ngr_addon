@@ -12,7 +12,7 @@
 
     <record id="nve_barcode_report" model="ir.actions.report">
         <field name="name">NVE Report</field>
-        <field name="model">stock.picking</field>
+        <field name="model">stock.quant.package</field>
         <field name="report_type">qweb-pdf</field>
         <field name="paperformat_id" ref="ngr_addon.pageformat_for_nve_barcode_report"/>
         <field name="report_name">ngr_addon.nve_report_template</field>

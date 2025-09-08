@@ -1,7 +1,7 @@
 <odoo>
 
 
-  <record model="ir.ui.view" id="adding_nve_field2">
+    <record model="ir.ui.view" id="adding_nve_field2">
         <field name="name">Adding NVE Field</field>
         <field name="model">stock.quant.package</field>
         <field name="inherit_id" ref="stock.view_quant_package_form"/>
@@ -9,9 +9,38 @@
             <xpath expr="//field[@name='location_id']" position="after">
                 <field name="nve"/>
             </xpath>
-<!--            <xpath expr="//header" position="inside">-->
-<!--                <button name="action_nve_report" string="Print NVE" invisible="not activate_nve or not nve" type="object"/>-->
+<!--            <xpath expr="//list" position="replace">-->
+<!--                <notebook>-->
+<!--                    <page>-->
+<!--                        <field name="quant_ids">-->
+<!--                            <list>-->
+<!--                                <field name="product_id"/>-->
+<!--                                <field name="lot_id" groups="stock.group_production_lot"/>-->
+<!--                                <field name="quantity"/>-->
+<!--                                <field name="packaging_weight"/>-->
+<!--                                <field name="gross_weight"/>-->
+<!--                                <field name="product_uom_id" groups="uom.group_uom"/>-->
+<!--                            </list>-->
+<!--                        </field>-->
+
+<!--                        <kanban class="o_kanban_mobile">-->
+<!--                            <templates>-->
+<!--                                <t t-name="card">-->
+<!--                                    <field name="product_id" class="fw-bold"/>-->
+<!--                                    <field name="lot_id"/>-->
+<!--                                    <div class="d-flex">-->
+<!--                                        <field name="quantity"/>-->
+<!--                                        <field class="mx-2" name="product_uom_id" groups="uom.group_uom"/>-->
+<!--                                    </div>-->
+<!--                                </t>-->
+<!--                            </templates>-->
+<!--                        </kanban>-->
+<!--                    </page>-->
+<!--                </notebook>-->
 <!--            </xpath>-->
+            <xpath expr="//header" position="inside">
+                <button name="action_nve_report" string="Print NVE" invisible="not nve" type="object"/>
+            </xpath>
         </field>
     </record>
 </odoo>

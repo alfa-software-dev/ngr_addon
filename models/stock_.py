@@ -240,7 +240,7 @@ class StockPicking(models.Model):
         if self.sale_id:
             invoices = self.sale_id._create_invoices()
             if invoices:
-                invoices.write({'delivery_id': self.id})
+                invoices.write({'picking_id': self.id})
 
     def _compute_nve(self):
         """
@@ -296,25 +296,5 @@ class StockPicking(models.Model):
         
         return (10 - (total % 10)) % 10
 
-    def action_nve_report(self):
-        """Generate NVE barcode report for this picking."""
-        return self.env.ref('ngr_addon.nve_barcode_report').report_action(self)
 
-    def label_template(self):
-        """
-        Get label template based on partner language.
-        
-        Returns:
-            dict: Template data for shipping labels
-        """
-        templates = {
-            'de_DE': {
-                'addresses': {'sender': "Absender", 'recipient': 'Empfänger'},
-            },
-            'en_US': {
-                'addresses': {'sender': "Sender", 'recipient': 'Recipient'},
-            }
-        }
-        
-        user_lang = 'de_DE' if self.partner_id.lang == 'de_DE' else 'en_US'
-        return templates[user_lang]
+

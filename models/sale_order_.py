@@ -4,8 +4,7 @@ from odoo.exceptions import UserError
 class AccountMove(models.Model):
     _inherit = 'account.move'
     
-    delivery_id = fields.Many2one('stock.picking')
-    delivery_seq = fields.Char(related='delivery_id.name', string='Delivery Ref')
+    picking_id = fields.Many2one('stock.picking')
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'

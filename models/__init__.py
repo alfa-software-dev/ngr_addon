@@ -2,5 +2,6 @@
 
 from . import models
 from . import sale_order_
+from . import account_move_
 from . import stock_
 from . import stock_quant_package
