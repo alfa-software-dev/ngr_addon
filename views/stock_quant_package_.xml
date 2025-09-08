@@ -9,35 +9,31 @@
             <xpath expr="//field[@name='location_id']" position="after">
                 <field name="nve"/>
             </xpath>
-<!--            <xpath expr="//list" position="replace">-->
-<!--                <notebook>-->
-<!--                    <page>-->
-<!--                        <field name="quant_ids">-->
-<!--                            <list>-->
-<!--                                <field name="product_id"/>-->
-<!--                                <field name="lot_id" groups="stock.group_production_lot"/>-->
-<!--                                <field name="quantity"/>-->
-<!--                                <field name="packaging_weight"/>-->
-<!--                                <field name="gross_weight"/>-->
-<!--                                <field name="product_uom_id" groups="uom.group_uom"/>-->
-<!--                            </list>-->
-<!--                        </field>-->
+            <xpath expr="//field[@name='quantity']" position="after">
+                <field name="packaging_weight"/>
+                <field name="gross_weight"/>
+            </xpath>
+            <xpath expr="//field[@name='quant_ids']" position="attributes">
+                <attribute name="readonly">0</attribute>
+            </xpath>
+            <xpath expr="//list" position="attributes">
+                <attribute name="edit">1</attribute>
+                <attribute name="editable">top</attribute>
 
-<!--                        <kanban class="o_kanban_mobile">-->
-<!--                            <templates>-->
-<!--                                <t t-name="card">-->
-<!--                                    <field name="product_id" class="fw-bold"/>-->
-<!--                                    <field name="lot_id"/>-->
-<!--                                    <div class="d-flex">-->
-<!--                                        <field name="quantity"/>-->
-<!--                                        <field class="mx-2" name="product_uom_id" groups="uom.group_uom"/>-->
-<!--                                    </div>-->
-<!--                                </t>-->
-<!--                            </templates>-->
-<!--                        </kanban>-->
-<!--                    </page>-->
-<!--                </notebook>-->
-<!--            </xpath>-->
+            </xpath>
+            <xpath expr="//field[@name='lot_id']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='product_id']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='quantity']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='product_uom_id']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+
             <xpath expr="//header" position="inside">
                 <button name="action_nve_report" string="Print NVE" invisible="not nve" type="object"/>
             </xpath>

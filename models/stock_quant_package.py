@@ -1,15 +1,15 @@
-from odoo import fields , models , api
-from odoo.exceptions import  ValidationError , UserError
+from odoo import fields, models, api
+from odoo.exceptions import ValidationError, UserError
 
 
-
-class StockQuantPackage(models.Model) :
+class StockQuantPackage(models.Model):
     _inherit = 'stock.quant.package'
     # NVE field - The shipping unit number
     # Readonly to prevent manual modification, copy=False to avoid duplication
     nve = fields.Char(string='NVE', readonly=True, copy=False,
                       help='Nummer der Versandeinheit - Shipping unit number')
-
+    quant_ids = fields.One2many('stock.quant', 'package_id', 'Bulk Content', readonly=False,
+                                domain=['|', ('quantity', '!=', 0), ('reserved_quantity', '!=', 0)])
 
     def action_nve_report(self):
         """Generate NVE barcode report for this picking."""
@@ -35,18 +35,13 @@ class StockQuantPackage(models.Model) :
     #     return templates[user_lang]
 
 
-
-class StockQuant(models.Model) :
+class StockQuant(models.Model):
     _inherit = 'stock.quant'
-    gross_weight  = fields.Float(digits='Product Unit of Measure',compute='_compute_gross_weight')
-    packaging_weight = fields.Float(digits='Product Unit of Measure',readonly=False)
+    gross_weight = fields.Float(digits='Product Unit of Measure', compute='_compute_gross_weight',store=True)
+    packaging_weight = fields.Float(digits='Product Unit of Measure', readonly=False)
 
     @api.depends('gross_weight')
-    def _compute_gross_weight (self) :
-         for rec in self :
-             rec.gross_weight = rec.packaging_weight + float(rec.product_id.weight * rec.quantity)
-
-
-
-
+    def _compute_gross_weight(self):
+        for rec in self:
+            rec.gross_weight = rec.packaging_weight + float(rec.product_id.weight * rec.quantity)
 
