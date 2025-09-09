@@ -1,10 +1,6 @@
 from odoo import fields, models, api, _
 from odoo.exceptions import UserError
 
-class AccountMove(models.Model):
-    _inherit = 'account.move'
-    
-    picking_id = fields.Many2one('stock.picking')
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -18,7 +14,7 @@ class SaleOrder(models.Model):
         ('7', 'MediaMarkt'),
     ]
     
-    market_place = fields.Selection(MARKETPLACE_CHOICES, string='Marketplace')
+    market_place = fields.Selection(MARKETPLACE_CHOICES, string='Marketplace',required=True)
 
     journal_id = fields.Many2one(comodel_name='account.journal')
 

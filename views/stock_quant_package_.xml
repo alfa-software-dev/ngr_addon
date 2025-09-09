@@ -33,10 +33,6 @@
             <xpath expr="//field[@name='product_uom_id']" position="attributes">
                 <attribute name="readonly">1</attribute>
             </xpath>
-
-            <xpath expr="//header" position="inside">
-                <button name="action_nve_report" string="Print NVE" invisible="not nve" type="object"/>
-            </xpath>
         </field>
     </record>
 </odoo>

@@ -11,28 +11,7 @@ class StockQuantPackage(models.Model):
     quant_ids = fields.One2many('stock.quant', 'package_id', 'Bulk Content', readonly=False,
                                 domain=['|', ('quantity', '!=', 0), ('reserved_quantity', '!=', 0)])
 
-    def action_nve_report(self):
-        """Generate NVE barcode report for this picking."""
-        return self.env.ref('ngr_addon.nve_barcode_report').report_action(self)
 
-    # def label_template(self):
-    #     """
-    #     Get label template based on partner language.
-    #
-    #     Returns:
-    #         dict: Template data for shipping labels
-    #     """
-    #     templates = {
-    #         'de_DE': {
-    #             'addresses': {'sender': "Absender", 'recipient': 'Empfänger'},
-    #         },
-    #         'en_US': {
-    #             'addresses': {'sender': "Sender", 'recipient': 'Recipient'},
-    #         }
-    #     }
-    #
-    #     user_lang = 'de_DE' if self.partner_id.lang == 'de_DE' else 'en_US'
-    #     return templates[user_lang]
 
 
 class StockQuant(models.Model):

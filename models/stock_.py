@@ -1,5 +1,5 @@
 from odoo import fields, api, models, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 
 class AccountJournal(models.Model):
@@ -38,11 +38,11 @@ class AccountJournal(models.Model):
             related_sequence_object = rec.env['ir.sequence'].search([
                 ('code', '=', sequence_code)
             ], limit=1)
-            
+
             # If a related sequence is found, delete it
             if related_sequence_object:
                 related_sequence_object.unlink()
-                
+
         return super(AccountJournal, self).unlink()
 
 
@@ -63,7 +63,7 @@ class StockWarehouse(models.Model):
     # GLN (Global Location Number) - A unique identifier for locations
     # Must be between 7-9 digits to get correct padding
     gln = fields.Char(string='GLN', help='Global Location Number (7-9 digits)')
-    
+
     # NVE Prefix - Single digit prefix for the shipping unit number
     # Used as the first digit in the NVE number (0-9)
     nve_prefix = fields.Selection([
@@ -80,7 +80,7 @@ class StockWarehouse(models.Model):
     ], string='NVE Prefix', help='Single digit prefix for NVE generation (0-9)')
 
     # Sequence reference used for generating sequential numbers in NVE
-    sequence_id = fields.Many2one('ir.sequence', string='NVE Sequence', 
+    sequence_id = fields.Many2one('ir.sequence', string='NVE Sequence',
                                   help='Sequence used for generating sequential numbers in NVE')
 
     @api.constrains('gln')
@@ -193,9 +193,12 @@ class StockPicking(models.Model):
     # nve = fields.Char(string='NVE', readonly=True, copy=False,
     #                  help='Nummer der Versandeinheit - Shipping unit number')
     picking_type_code = fields.Selection(related='picking_type_id.code')
-    
+
+    # field to pass packages thar are exist in account.move.line
+    result_packages = fields.Many2many(comodel_name='stock.quant.package')
+
     account_journal_id = fields.Many2one('account.journal', string='Account Journal')
-    
+
     # Related field to check NVE activation from the sale order's journal
     # This field automatically reflects the activate_nve value from the journal
     activate_nve = fields.Boolean(
@@ -203,6 +206,7 @@ class StockPicking(models.Model):
         readonly=False,
         help='Automatically synced with journal NVE activation status'
     )
+
     def button_validate(self):
         """
         Override button_validate to generate NVE on picking validation.
@@ -214,27 +218,52 @@ class StockPicking(models.Model):
             The result of the parent button_validate method.
         """
         result = super(StockPicking, self).button_validate()
-        
+
         # Only process outgoing pickings with NVE activation
-        if (self.activate_nve and 
-            self.picking_type_id.code == 'outgoing' and 
-            self.state == 'done'):
-            
+        if (self.activate_nve and
+                self.picking_type_id.code == 'outgoing' and
+                self.state == 'done'):
+
+            self._check_result_packages()
             self._validate_nve_requirements()
             self._create_invoice_and_link_delivery()
             self._compute_nve()
-            
+
         return result
-    
+
     def _validate_nve_requirements(self):
         """Validate that warehouse has all required NVE configuration."""
         warehouse = self.picking_type_id.warehouse_id
-        
+
         if not warehouse.nve_prefix:
             raise ValidationError(_('NVE prefix does not exist. Please configure it in the warehouse settings.'))
         if not warehouse.gln:
             raise ValidationError(_('GLN does not exist. Please configure it in the warehouse settings.'))
-    
+
+    def _check_result_packages(self):
+        """
+         This method checks whether the user has assigned items to packages as required for sending to MediaMarkt.
+         It performs two checks:
+         1. If no packages are assigned, an error will be raised.
+         2. If there are packages but one or more items are not assigned to a specific package, an error will be raised.
+
+         Raises:
+             UserError: If no packages are assigned or if there are items that are not assigned to packages.
+         """
+        # Get all result packages from move lines
+        result_packages = self.move_line_ids.mapped('result_package_id')
+
+        if not result_packages.exists():
+            raise UserError(_('At least one package must exist'))
+
+        if len(result_packages) < len(self.move_line_ids):
+            raise UserError(_('There is a quantity that has not been assigned to a package'))
+
+        # pass result_packages to model stock.picking to generate Nve reports based on it later
+        self.result_packages = result_packages
+
+
+
     def _create_invoice_and_link_delivery(self):
         """Create invoice for the sale order and link this delivery."""
         if self.sale_id:
@@ -255,17 +284,13 @@ class StockPicking(models.Model):
         Example: 0 + 1234567 + 000000001 + 3 = 012345670000000013
         """
         warehouse = self.picking_type_id.warehouse_id
-        
+
         # Verify all required fields are present
         if not all([warehouse, warehouse.gln, warehouse.nve_prefix, warehouse.sequence_id]):
             return
-        
-        # Get all result packages from move lines
-        result_packages = self.move_line_ids.mapped('result_package_id')
-        result_packages = result_packages.filtered(lambda p: p)  # Remove empty records
-        
+
         # Generate NVE for each result package
-        for package in result_packages:
+        for package in self.result_packages:
             if not package.nve:  # Only generate if NVE doesn't exist
                 # Get next sequence number and build NVE
                 reference = warehouse.sequence_id.next_by_id()
@@ -293,8 +318,34 @@ class StockPicking(models.Model):
             int(digit) * (3 if i % 2 == 0 else 1)
             for i, digit in enumerate(sequence)
         )
-        
+
         return (10 - (total % 10)) % 10
+
+    def label_template(self):
+        """
+        Get label template based on partner language.
+
+        Returns:
+            dict: Template data for shipping labels
+        """
+        templates = {
+            'de_DE': {
+                'addresses': {'sender': "Absender", 'recipient': 'Empfänger'},
+            },
+            'en_US': {
+                'addresses': {'sender': "Sender", 'recipient': 'Recipient'},
+            }
+        }
+
+        user_lang = 'de_DE' if self.partner_id.lang == 'de_DE' else 'en_US'
+        return templates[user_lang]
+
+    def action_nve_report(self):
+        if self.state != 'done':
+            raise UserError(_('Delivery must be validated before printing NVE'))
+
+        """Generate NVE barcode report for this picking."""
+        return self.env.ref('ngr_addon.nve_barcode_report').report_action(self)
 
 
 

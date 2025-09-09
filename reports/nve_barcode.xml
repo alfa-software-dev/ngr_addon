@@ -12,7 +12,7 @@
 
     <record id="nve_barcode_report" model="ir.actions.report">
         <field name="name">NVE Report</field>
-        <field name="model">stock.quant.package</field>
+        <field name="model">stock.picking</field>
         <field name="report_type">qweb-pdf</field>
         <field name="paperformat_id" ref="ngr_addon.pageformat_for_nve_barcode_report"/>
         <field name="report_name">ngr_addon.nve_report_template</field>
@@ -99,7 +99,7 @@
         </style>
 
         <div class="header nve-header">
-            <t t-set="template" t-value="doc.label_template()"/>
+<!--            <t t-set="template" t-value="doc.label_template()"/>-->
             <table style="width: 100%; border-collapse: separate;">
                 <tr>
                     <td style="width: 20%;  padding-top:15px; padding-bottom:15px; text-align:right;">
@@ -109,7 +109,8 @@
 
                     <td style="width: 50%; padding: 5px; vertical-align: top;">
                         <div class="address-title">
-                            <t t-out="template['addresses']['sender']"/>
+                            Sender
+<!--                            <t t-out="template['addresses']['sender']"/>-->
                         </div>
                         <div style="font-size:10pt;line-height: 1.4;">
                             <t t-out="doc.company_id.partner_id.name"/><br/>
@@ -126,7 +127,8 @@
 
                     <td style="width: 30%; padding: 5px; vertical-align: top;">
                         <div class="address-title">
-                            <t t-out="template['addresses']['recipient']"/>
+                            Recipient
+<!--                            <t t-out="template['addresses']['recipient']"/>-->
                         </div>
                         <div style="font-size:10pt;line-height: 1.4;">
                             <t t-out="doc.partner_id.name"/><br/>
@@ -156,9 +158,11 @@
     <template id="nve_report_template">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
+                <t t-foreach="docs.result_packages" t-as="package">
                 <t t-call="ngr_addon.nve_report_layout">
                     <div class="page">
                         <!-- NVE Barcode Section -->
+                        <h3><t t-out="package.name"/></h3>
                         <div style="text-align:center;padding-top:130pt">
                             <table style="border-collapse:separate;">
                                 <tr>
@@ -171,9 +175,9 @@
 
                                     </td>
                                     <td style="vertical-align:bottom">
-                                        <img t-attf-src="/report/barcode/Code128/{{doc.nve}}" alt="QR Code"/>
+                                        <img t-attf-src="/report/barcode/Code128/{{package.nve}}" alt="QR Code"/>
                                         <div style="font-size:12pt; margin-top:5px;">
-                                            <t t-out="doc.nve"/>
+                                            <t t-out="package.nve"/>
                                         </div>
                                     </td>
                                 </tr>
@@ -183,6 +187,7 @@
                         </div>
 
                     </div>
+                </t>
                 </t>
             </t>
         </t>
