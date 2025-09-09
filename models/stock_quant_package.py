@@ -18,9 +18,15 @@ class StockQuant(models.Model):
     _inherit = 'stock.quant'
     gross_weight = fields.Float(digits='Product Unit of Measure', compute='_compute_gross_weight',store=True)
     packaging_weight = fields.Float(digits='Product Unit of Measure', readonly=False)
+    net_weight = fields.Float(digits='Product Unit of Measure', readonly=True,compute='_compute_net_weight' ,store=True)
 
-    @api.depends('gross_weight')
+    @api.depends('packaging_weight')
     def _compute_gross_weight(self):
         for rec in self:
             rec.gross_weight = rec.packaging_weight + float(rec.product_id.weight * rec.quantity)
+
+    @api.depends('packaging_weight')
+    def _compute_net_weight (self):
+        for rec in self :
+            rec.net_weight = rec.product_id.weight * rec.quantity
 

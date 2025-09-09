@@ -262,8 +262,6 @@ class StockPicking(models.Model):
         # pass result_packages to model stock.picking to generate Nve reports based on it later
         self.result_packages = result_packages
 
-
-
     def _create_invoice_and_link_delivery(self):
         """Create invoice for the sale order and link this delivery."""
         if self.sale_id:
@@ -346,6 +344,4 @@ class StockPicking(models.Model):
 
         """Generate NVE barcode report for this picking."""
         return self.env.ref('ngr_addon.nve_barcode_report').report_action(self)
-
-
 
