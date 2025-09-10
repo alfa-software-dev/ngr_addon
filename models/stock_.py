@@ -251,16 +251,24 @@ class StockPicking(models.Model):
              UserError: If no packages are assigned or if there are items that are not assigned to packages.
          """
         # Get all result packages from move lines
-        result_packages = self.move_line_ids.mapped('result_package_id')
+        result_packages_with_repeats = [move_line.result_package_id for move_line in self.move_line_ids]
 
-        if not result_packages.exists():
+        result_packages_without_repeats = self.move_line_ids.mapped('result_package_id')
+
+
+        if not result_packages_with_repeats:
             raise UserError(_('At least one package must exist'))
 
-        if len(result_packages) < len(self.move_line_ids):
+        print(50*'*')
+        print(len(result_packages_with_repeats))
+        print(len(self.move_line_ids))
+
+
+        if len(result_packages_with_repeats) < len(self.move_line_ids):
             raise UserError(_('There is a quantity that has not been assigned to a package'))
 
         # pass result_packages to model stock.picking to generate Nve reports based on it later
-        self.result_packages = result_packages
+        self.result_packages = result_packages_without_repeats
 
     def _create_invoice_and_link_delivery(self):
         """Create invoice for the sale order and link this delivery."""
