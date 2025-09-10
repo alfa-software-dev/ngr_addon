@@ -251,21 +251,15 @@ class StockPicking(models.Model):
              UserError: If no packages are assigned or if there are items that are not assigned to packages.
          """
         # Get all result packages from move lines
-        result_packages_with_repeats = [move_line.result_package_id for move_line in self.move_line_ids]
-
         result_packages_without_repeats = self.move_line_ids.mapped('result_package_id')
 
 
-        if not result_packages_with_repeats:
+        if not result_packages_without_repeats:
             raise UserError(_('At least one package must exist'))
 
-        print(50*'*')
-        print(len(result_packages_with_repeats))
-        print(len(self.move_line_ids))
-
-
-        if len(result_packages_with_repeats) < len(self.move_line_ids):
-            raise UserError(_('There is a quantity that has not been assigned to a package'))
+        for line in self.move_line_ids :
+            if not line.result_package_id :
+                raise UserError(_('There is a quantity that  has not been assigned to a package'))
 
         # pass result_packages to model stock.picking to generate Nve reports based on it later
         self.result_packages = result_packages_without_repeats
