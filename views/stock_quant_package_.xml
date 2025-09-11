@@ -13,11 +13,9 @@
                 <field name="packaging_weight"/>
                 <field name="net_weight"/>
                 <field name="gross_weight"/>
-                <field name="sale_order_line_id"/>
             </xpath>
             <xpath expr="//field[@name='pack_date']" position="before">
                 <field name="picking_id"/>
-                <field name="picking_type_code"/>
             </xpath>
             <xpath expr="//field[@name='quant_ids']" position="attributes">
                 <attribute name="readonly">0</attribute>
