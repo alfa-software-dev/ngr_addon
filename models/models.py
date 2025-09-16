@@ -29,14 +29,14 @@ class AccountMove(models.Model):
     def get_move_sequence(self):
         """
         Extract sequence number from move name for display in reports.
-        Removes static prefixes (Rechnung/Gutschrift) from the sequence.
+        Removes static prefixes (RE_/GS_) from the sequence.
         
         Returns:
             str: Clean sequence number (e.g., 'O2025-00001')
         """
         move_type_prefixes = {
-            'out_invoice': 'Rechnung',
-            'out_refund': 'Gutschrift'
+            'out_invoice': 'RE_',
+            'out_refund': 'GS_'
         }
         
         prefix = move_type_prefixes.get(self.move_type)
@@ -237,9 +237,9 @@ class AccountMove(models.Model):
 
                 # Depending on whether the move is an invoice or credit note, set the placeholder name
                 if move.move_type == "out_invoice":
-                    move.name_placeholder = 'Rechnung ' + move.journal_id.code + next_number
+                    move.name_placeholder = 'RE_ ' + move.journal_id.code + next_number
                 elif move.move_type == "out_refund":
-                    move.name_placeholder = 'Gutschrift ' + move.journal_id.code + next_number
+                    move.name_placeholder = 'GS_ ' + move.journal_id.code + next_number
 
     @api.model
     def create(self, vals):
@@ -283,9 +283,9 @@ class AccountMove(models.Model):
 
             # Set the name of the invoice/credit note using the sequence
             if result.move_type == "out_invoice":
-                result.name = 'Rechnung ' + result.journal_id.code + sequence.next_by_id()
+                result.name = 'RE_' + result.journal_id.code + sequence.next_by_id()
             elif result.move_type == "out_refund":
-                result.name = 'Gutschrift ' + result.journal_id.code + sequence.next_by_id()
+                result.name = 'GS_ ' + result.journal_id.code + sequence.next_by_id()
 
         return result
 
@@ -304,7 +304,7 @@ class AccountMove(models.Model):
             'name': f'Custom Sequence for {name}',
             'code': sequence_code,
             'prefix': '%(year)s-',
-            'padding': 5,
+            'padding': 6,
             'number_next': 1,
         })
 
