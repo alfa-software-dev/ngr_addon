@@ -106,19 +106,31 @@
         </div>
         <div class="footer o_standard_footer last-page" style="min-height: 100pt;">
             <hr/>
-            <table style="width: 100%; font-size:10pt; margin-top: 20pt;border-collapse:separate">
+            <table style="width: 100%; font-size: 10pt; margin-top: 20pt; border-collapse: separate;">
                 <tr>
+                    <!-- Left Column -->
                     <td style="width: 33%; vertical-align: top;">
-                        <p style="margin: 0; white-space: pre-line;"><t
-                                t-out="lang_template['footer_company']['left']"/></p>
+                        <t t-foreach="lang_template['footer_company']['left']" t-as="item">
+                            <p style="margin: 0; white-space: pre-line; text-align: left;">
+                                <t t-out="item"/>
+                            </p>
+                        </t>
                     </td>
-                    <td style="width: 34%; vertical-align: top; text-align: center;">
-                        <p style="margin: 0; white-space: pre-line;"><t
-                                t-out="lang_template['footer_company']['center']"/></p>
+                    <!-- Center Column -->
+                    <td style="width: 34%; vertical-align: top; text-align: left;">
+                        <t t-foreach="lang_template['footer_company']['center']" t-as="item">
+                            <p style="margin: 0; white-space: pre-line; text-align: left;">
+                                <t t-out="item"/>
+                            </p>
+                        </t>
                     </td>
-                    <td style="width: 33%; vertical-align: top; text-align: right;">
-                        <p style="margin: 0; white-space: pre-line;"><t
-                                t-out="lang_template['footer_company']['right']"/></p>
+                    <!-- Right Column -->
+                    <td style="width: 33%; vertical-align: top; text-align: left;">
+                        <t t-foreach="lang_template['footer_company']['right']" t-as="item">
+                            <p style="margin: 0; white-space: pre-line; text-align: left;">
+                                <t t-out="item"/>
+                            </p>
+                        </t>
                     </td>
                 </tr>
             </table>

@@ -25,7 +25,7 @@ class AccountMove(models.Model):
             digits=2,
             currency_obj=self.currency_id
         )
-    
+
     def get_move_sequence(self):
         """
         Extract sequence number from move name for display in reports.
@@ -38,13 +38,13 @@ class AccountMove(models.Model):
             'out_invoice': 'RE_',
             'out_refund': 'GS_'
         }
-        
+
         prefix = move_type_prefixes.get(self.move_type)
         if prefix and prefix in self.name:
             return self.name.split(prefix)[1]
-        
+
         return ""
-    
+
     def get_invoice_paid_date(self):
         """
         Returns the formatted payment date for the invoice.
@@ -54,7 +54,7 @@ class AccountMove(models.Model):
         """
         if not self.matched_payment_ids:
             return format_date(self.env, self.invoice_date, lang_code=self.partner_id.lang or 'en_US')
-            
+
         latest_payment = max(self.matched_payment_ids, key=lambda payment: payment.date)
         return format_date(self.env, latest_payment.date, lang_code=self.partner_id.lang or 'en_US')
 
@@ -65,11 +65,11 @@ class AccountMove(models.Model):
         Returns:
             dict: Template data including titles, headers, footer, and payment text.
         """
-        payment_date = (self.get_invoice_paid_date() 
-                       if self.matched_payment_ids 
+        payment_date = (self.get_invoice_paid_date()
+                       if self.matched_payment_ids
                        else self.get_invoice_date())
         invoice_date = self.get_invoice_date()
-        
+
         templates = {
             'de_DE': {
                 'title' : ['Rechnung','Gutschrift','Steuer-Nr. 44/663/70421','Ust-IdNr. DE452204311'],
@@ -77,9 +77,19 @@ class AccountMove(models.Model):
                 'headers': ['Pos.', 'Anzahl', 'Einheit', 'Bezeichnung', 'Einzelpreis', 'Gesamtpreis'],
                 'totals': ['Gesamt Netto', 'Zzgl.MwSt.', 'Gesamt Brutto:'],
                 'footer_company': {
-                    'left': 'Sitz der Gesellschaft: Nackenheim\nGeschäftsführer: Ouyang Shi',
-                    'center': 'Amtsgericht Mainz, HRB 53400\nUst-IdNr DE452204311\nSteuer-Nr. 44/663/70421',
-                    'right': 'Bankverbindung: Commerzbank\nIBAN: DE26 5084 0005 0604 5702 00\nBIC: COBADEFFXXX'
+                    'left': [
+                        'Sitz der Gesellschaft: Nackenheim',
+                        'Amtsgericht Mainz, HRB 53400'
+                    ],
+                    'center': [
+                        'Ust-IdNr DE452204311',
+                        'Steuer-Nr. 44/663/70421'
+                    ],
+                    'right': [
+                        'Bankverbindung: Commerzbank',
+                        'IBAN: DE26 5084 0005 0604 5702 00',
+                        'BIC: COBADEFFXXX'
+                    ]
                 },
                 'payment_text': f'Die Rechnung wurde am {payment_date} bezahlt.',
                 'credit_text': f'Die Gutschrift wurde am {invoice_date} gebucht.'
@@ -90,9 +100,19 @@ class AccountMove(models.Model):
                 'headers': ['No.', 'Quantity', 'Unit', 'Description', 'Unit Price', 'Total Price'],
                 'totals': ['Total net', 'Plus VAT', 'Total gross:'],
                 'footer_company': {
-                    'left': 'Registered Office: Nackenheim\nManaging Director: Ouyang Shi',
-                    'center': 'Commercial Register: Mainz, HRB 53400\nVAT ID No.: DE452204311\nTax Number: 44/663/70421',
-                    'right': 'Bank Details: Commerzbank\nIBAN: DE26 5084 0005 0604 5702 00\nBIC: COBADEFFXXX'
+                    'left': [
+                        'Registered Office: Nackenheim',
+                        'Commercial Register: Mainz, HRB 53400'
+                    ],
+                    'center': [
+                        'VAT ID No.: DE452204311',
+                        'Tax Number: 44/663/70421'
+                    ],
+                    'right': [
+                        'Bank Details: Commerzbank',
+                        'IBAN: DE26 5084 0005 0604 5702 00',
+                        'BIC: COBADEFFXXX'
+                    ]
                 },
                 'payment_text': f'The invoice was paid on {payment_date}.',
                 'credit_text': f'The credit note was posted on {invoice_date}.'
@@ -104,9 +124,19 @@ class AccountMove(models.Model):
                 'headers': ['No.', 'Quantity', 'Unit', 'Description', 'Unit Price', 'Total Price'],
                 'totals': ['Total net', 'Plus VAT', 'Total gross:'],
                 'footer_company': {
-                    'left': 'Registered Office: Nackenheim\nManaging Director: Ouyang Shi',
-                    'center': 'Commercial Register: Mainz, HRB 53400\nVAT ID No.: DE452204311\nTax Number: 44/663/70421',
-                    'right': 'Bank Details: Commerzbank\nIBAN: DE26 5084 0005 0604 5702 00\nBIC: COBADEFFXXX'
+                    'left': [
+                        'Registered Office: Nackenheim',
+                        'Commercial Register: Mainz, HRB 53400'
+                    ],
+                    'center': [
+                        'VAT ID No.: DE452204311',
+                        'Tax Number: 44/663/70421'
+                    ],
+                    'right': [
+                        'Bank Details: Commerzbank',
+                        'IBAN: DE26 5084 0005 0604 5702 00',
+                        'BIC: COBADEFFXXX'
+                    ]
                 },
                 'payment_text': f'The invoice was paid on {payment_date}.',
                 'credit_text': f'The credit note was posted on {invoice_date}.'
@@ -123,7 +153,7 @@ class AccountMove(models.Model):
                Returns:
                    str: The formatted invoice date.
         """
-        
+
         return format_date(self.env, self.invoice_date, lang_code=self.partner_id.lang or 'en_US')
 
     def get_order_date(self, order_obj):
@@ -138,7 +168,7 @@ class AccountMove(models.Model):
         """
         user_lang = self.partner_id.lang or 'en_US'
         dt_format = "MM/dd/yyyy HH:mm:ss" if user_lang != 'de_DE' else None
-        
+
         return format_datetime(
             self.env,
             order_obj.date_order,
@@ -159,11 +189,11 @@ class AccountMove(models.Model):
         """
         if not line.tax_ids:
             return self.get_formatted_amount(line.price_unit)
-            
+
         tax_rate = line.tax_ids[0].amount
         tax_amount = round(tax_rate * line.price_unit / 100, 2)
         price_with_tax = round(line.price_unit + tax_amount, 2)
-        
+
         return self.get_formatted_amount(price_with_tax)
 
     check_if_email_is_send = fields.Boolean(copy=False)
