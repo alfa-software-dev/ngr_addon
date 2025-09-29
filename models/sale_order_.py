@@ -14,7 +14,7 @@ class SaleOrder(models.Model):
         ('7', 'MediaMarkt'),
     ]
     
-    market_place = fields.Selection(MARKETPLACE_CHOICES, string='Marketplace',required=True)
+    market_place = fields.Selection(MARKETPLACE_CHOICES, string='Marketplace')
 
     journal_id = fields.Many2one(comodel_name='account.journal')
 

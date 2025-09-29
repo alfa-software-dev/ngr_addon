@@ -5,7 +5,7 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='payment_term_id']" position="after">
-                <field name="market_place" string="Marketplace" readonly="state=='sale'"/>
+                <field name="market_place" string="Marketplace" readonly="state=='sale'" required="state=='sale'"/>
             </xpath>
         </field>
     </record>
