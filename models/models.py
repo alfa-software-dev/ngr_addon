@@ -26,25 +26,25 @@ class AccountMove(models.Model):
             currency_obj=self.currency_id
         )
 
-    def get_move_sequence(self):
-        """
-        Extract sequence number from move name for display in reports.
-        Removes static prefixes (RE_/GS_) from the sequence.
-        
-        Returns:
-            str: Clean sequence number (e.g., 'O2025-00001')
-        """
-
-        move_type_prefixes = {
-            'out_invoice': self.journal_id.invoice_name or '',
-            'out_refund': self.journal_id.credit_note_name or ''
-        }
-
-        prefix = move_type_prefixes.get(self.move_type)
-        if prefix and prefix in self.name:
-            return self.name.split(prefix)[1]
-
-        return self.name
+    # def get_move_sequence(self):
+    #     """
+    #     Extract sequence number from move name for display in reports.
+    #     Removes static prefixes (RE_/GS_) from the sequence.
+    #
+    #     Returns:
+    #         str: Clean sequence number (e.g., 'O2025-00001')
+    #     """
+    #
+    #     move_type_prefixes = {
+    #         'out_invoice': self.journal_id.invoice_name or '',
+    #         'out_refund': self.journal_id.credit_note_name or ''
+    #     }
+    #
+    #     prefix = move_type_prefixes.get(self.move_type)
+    #     if prefix and prefix in self.name:
+    #         return self.name.split(prefix)[1]
+    #
+    #     return self.name
 
     def get_invoice_paid_date(self):
         """
