@@ -36,8 +36,8 @@ class AccountMove(models.Model):
         """
 
         move_type_prefixes = {
-            'out_invoice': self.journal_id.invoice_name,
-            'out_refund': self.journal_id.credit_note_name
+            'out_invoice': self.journal_id.invoice_name or '',
+            'out_refund': self.journal_id.credit_note_name or ''
         }
 
         prefix = move_type_prefixes.get(self.move_type)
@@ -268,9 +268,9 @@ class AccountMove(models.Model):
 
                 # Depending on whether the move is an invoice or credit note, set the placeholder name
                 if move.move_type == "out_invoice":
-                    move.name_placeholder = move.journal_id.invoice_name + move.journal_id.code + next_number
+                    move.name_placeholder = (move.journal_id.invoice_name or "") + (move.journal_id.code or "") + (sequence.next_by_id() or "")
                 elif move.move_type == "out_refund":
-                    move.name_placeholder = move.journal_id.credit_note_name + move.journal_id.code + next_number
+                    move.name_placeholder = (move.journal_id.credit_note_name or "") + (move.journal_id.code or "") + (sequence.next_by_id() or "")
 
     @api.model
     def create(self, vals):
@@ -314,9 +314,9 @@ class AccountMove(models.Model):
 
             # Set the name of the invoice/credit note using the sequence
             if result.move_type == "out_invoice":
-                result.name = result.journal_id.invoice_name + result.journal_id.code + sequence.next_by_id()
+                result.name = (result.journal_id.invoice_name or "") + (result.journal_id.code or "") + (sequence.next_by_id() or "")
             elif result.move_type == "out_refund":
-                result.name = result.journal_id.credit_note_name + result.journal_id.code + sequence.next_by_id()
+                result.name = (result.journal_id.credit_note_name or "") + (result.credit_note_name.code or "") + (sequence.next_by_id() or "")
 
         return result
 
