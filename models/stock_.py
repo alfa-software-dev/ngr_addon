@@ -20,6 +20,12 @@ class AccountJournal(models.Model):
         help='Enable automatic NVE generation for stock pickings related to sales orders using this journal'
     )
 
+    invoice_name = fields.Char(help='This name will appear on the invoice after the shortcode.')
+    credit_note_name = fields.Char(
+        string='Credit Note Name',
+        help='This name will appear on the credit note after the shortcode.'
+    )
+
     def unlink(self):
         """
         Overrides the unlink method to ensure that if an account journal is deleted,

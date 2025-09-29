@@ -34,9 +34,10 @@ class AccountMove(models.Model):
         Returns:
             str: Clean sequence number (e.g., 'O2025-00001')
         """
+
         move_type_prefixes = {
-            'out_invoice': 'RE_',
-            'out_refund': 'GS_'
+            'out_invoice': self.journal_id.invoice_name,
+            'out_refund': self.journal_id.credit_note_name
         }
 
         prefix = move_type_prefixes.get(self.move_type)
@@ -267,9 +268,9 @@ class AccountMove(models.Model):
 
                 # Depending on whether the move is an invoice or credit note, set the placeholder name
                 if move.move_type == "out_invoice":
-                    move.name_placeholder = 'RE_ ' + move.journal_id.code + next_number
+                    move.name_placeholder = move.journal_id.invoice_name + move.journal_id.code + next_number
                 elif move.move_type == "out_refund":
-                    move.name_placeholder = 'GS_ ' + move.journal_id.code + next_number
+                    move.name_placeholder = move.journal_id.credit_note_name + move.journal_id.code + next_number
 
     @api.model
     def create(self, vals):
@@ -313,9 +314,9 @@ class AccountMove(models.Model):
 
             # Set the name of the invoice/credit note using the sequence
             if result.move_type == "out_invoice":
-                result.name = 'RE_' + result.journal_id.code + sequence.next_by_id()
+                result.name = result.journal_id.invoice_name + result.journal_id.code + sequence.next_by_id()
             elif result.move_type == "out_refund":
-                result.name = 'GS_ ' + result.journal_id.code + sequence.next_by_id()
+                result.name = result.journal_id.credit_note_name + result.journal_id.code + sequence.next_by_id()
 
         return result
 
@@ -333,7 +334,7 @@ class AccountMove(models.Model):
         return self.env['ir.sequence'].create({
             'name': f'Custom Sequence for {name}',
             'code': sequence_code,
-            'prefix': '%(year)s-',
+            'prefix': '%(year)s',
             'padding': 6,
             'number_next': 1,
         })
