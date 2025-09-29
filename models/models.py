@@ -44,7 +44,7 @@ class AccountMove(models.Model):
         if prefix and prefix in self.name:
             return self.name.split(prefix)[1]
 
-        return ""
+        return self.name
 
     def get_invoice_paid_date(self):
         """
