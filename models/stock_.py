@@ -246,6 +246,9 @@ class StockPicking(models.Model):
         if not warehouse.gln:
             raise ValidationError(_('GLN does not exist. Please configure it in the warehouse settings.'))
 
+        if not self.activate_nve :
+            raise ValidationError(_(f"Activation of NVE is not enabled. Please enable it in the ({self.sale_id.journal_id.name}) Journal settings."))
+
     def _check_result_packages(self):
         """
          This method checks whether the user has assigned items to packages as required for sending to MediaMarkt.
