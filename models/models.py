@@ -121,7 +121,7 @@ class AccountMove(models.Model):
 
              'en_GB': {
                 'title': ['Invoice', 'Credit Note','Tax Number: 44/663/70421','VAT ID No.: DE452204311'],
-                'invoice_details': ['Invoice Date', 'Credit Note Date', 'Order Number', 'Order Date'],
+                'invoice_details': ['Invoice Date', 'Credit Note Date', 'Order Number', 'Order Date','Delivery'],
                 'headers': ['No.', 'Quantity', 'Unit', 'Description', 'Unit Price', 'Total Price'],
                 'totals': ['Total net', 'Plus VAT', 'Total gross:'],
                 'footer_company': {
