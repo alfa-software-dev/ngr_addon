@@ -171,7 +171,7 @@
                             <t t-set="right_offset" t-value="'-5px' if docs.partner_id.lang == 'de_DE' else '22px'"/> -->
 
                             <t t-set="lang_template" t-value="doc.get_invoice_template_based_on_lang()"/>
-                            <t t-set="right_offset" t-value="'-5px' if docs.partner_id.lang == 'de_DE' else '22px'"/>
+                            <t t-set="right_offset" t-value="'-5px' if docs.partner_id.lang == 'de_DE' else '30px'"/>
                             <t t-if="doc.move_type == 'out_refund'">
                             <t t-set="right_offset" t-value="'-2px'"/>
                             </t>
