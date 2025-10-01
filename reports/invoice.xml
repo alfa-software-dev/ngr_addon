@@ -190,7 +190,9 @@
                                     <t t-out="lang_template['invoice_details'][2]"/>.: <t
                                         t-out="doc.invoice_origin or ''"/><br/>
                                     <t t-out="lang_template['invoice_details'][3]"/>: <t
-                                        t-out="doc.get_invoice_date()"/>
+                                        t-out="doc.get_invoice_date()"/><br/>
+                                    <t t-out="lang_template['invoice_details'][4]"/>: <t
+                                        t-out="doc.picking_id.name"/>
                                     <br/>
                                 </div>
                             </div>
@@ -200,10 +202,10 @@
 
                         <div style="margin: 30pt 0 20pt 0;">
                             <t t-if="doc.move_type == 'out_invoice'">
-                                <h6 style="font-weight: bold;"><t t-out="doc.name"/></h6>
+                                <h5 style="font-weight: bold;"><t t-out="doc.name"/></h5>
                             </t>
                             <t t-if="doc.move_type == 'out_refund'">
-                                <h6 style="font-weight: bold;"><t t-out="doc.name"/></h6>
+                                <h5 style="font-weight: bold;"><t t-out="doc.name"/></h5>
                             </t>
                         </div>
 
@@ -211,14 +213,18 @@
                         <table class="invoice-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 10%;"><t t-out="lang_template['headers'][0]"/></th>
-                                    <th style="width: 10%;"><t t-out="lang_template['headers'][1]"/></th>
-                                    <th style="width: 10%;"><t t-out="lang_template['headers'][2]"/></th>
-                                    <th style="width: 40%;"><t t-out="lang_template['headers'][3]"/></th>
-                                    <th style="width: 15%; text-align: right;"><t
+                                    <th><t t-out="lang_template['headers'][0]"/></th>
+                                    <th><t t-out="lang_template['headers'][1]"/></th>
+                                    <th><t t-out="lang_template['headers'][2]"/></th>
+                                    <th>
+                                        <t t-out="lang_template['headers'][3]"/>
+                                    </th>
+                                    <th>EAN</th>
+                                    <th style="text-align: right;"><t
                                             t-out="lang_template['headers'][4]"/></th>
-                                    <th style="width: 15%; text-align: right;"><t
+                                    <th style="text-align: right;"><t
                                             t-out="lang_template['headers'][5]"/></th>
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -229,7 +235,14 @@
                                         <td><t t-out="line_index + 1"/></td>
                                         <td><t t-out="int(line.quantity)"/></td>
                                         <td>Stück</td>
-                                        <td><t t-out="line.product_id.name"/></td>
+                                        <td>
+                                            <t t-out="line.product_id.name"/>
+                                        </td>
+                                         <td>
+                                           <span t-if="line.product_id.barcode">
+                                               <t t-out="line.product_id.barcode"/>
+                                           </span>
+                                        </td>
                                         <td style="text-align: right;">
                                             <t t-if="doc.move_type == 'out_refund'">-</t><t
                                                 t-out="doc.item_price_with_tax(line)"/>
@@ -238,6 +251,7 @@
                                             <t t-if="doc.move_type == 'out_refund'">-</t><t
                                                 t-out="doc.get_formatted_amount(line.price_total)"/>
                                         </td>
+
                                     </tr>
                                 </t>
                             </tbody>

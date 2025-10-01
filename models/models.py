@@ -74,7 +74,7 @@ class AccountMove(models.Model):
         templates = {
             'de_DE': {
                 'title' : ['Rechnung','Gutschrift','Steuer-Nr. 44/663/70421','Ust-IdNr. DE452204311'],
-                'invoice_details' : ['Rechnungsdatum','Gutschriftsdatum' , 'Bestellungs-Nr' , 'Bestelldatum'],
+                'invoice_details' : ['Rechnungsdatum','Gutschriftsdatum' , 'Bestellungs-Nr' , 'Bestelldatum','Lieferung'],
                 'headers': ['Pos.', 'Anzahl', 'Einheit', 'Bezeichnung', 'Einzelpreis', 'Gesamtpreis'],
                 'totals': ['Gesamt Netto', 'Zzgl.MwSt.', 'Gesamt Brutto:'],
                 'footer_company': {
@@ -97,7 +97,7 @@ class AccountMove(models.Model):
             },
             'en_US': {
                 'title': ['Invoice', 'Credit Note','Tax Number: 44/663/70421','VAT ID No.: DE452204311'],
-                'invoice_details': ['Invoice Date', 'Credit Note Date', 'Order Number', 'Order Date'],
+                'invoice_details': ['Invoice Date', 'Credit Note Date', 'Order Number', 'Order Date','Delivery'],
                 'headers': ['No.', 'Quantity', 'Unit', 'Description', 'Unit Price', 'Total Price'],
                 'totals': ['Total net', 'Plus VAT', 'Total gross:'],
                 'footer_company': {
