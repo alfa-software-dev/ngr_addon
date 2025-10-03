@@ -5,11 +5,12 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='payment_term_id']" position="after">
-                <field name="market_place" string="Marketplace" readonly="state=='sale'"/>
+                <field name="to_market_place" string="To Marketplace" invisible="state=='sale'"/>
+                <field name="market_place" string="Marketplace" readonly="state=='sale'" invisible="not to_market_place"/>
             </xpath>
         </field>
     </record>
-    
+
      <record model="ir.ui.view" id="adding_marketplace_field_tree">
         <field name="name">Adding Marketplace Field in Tree</field>
         <field name="model">sale.order</field>

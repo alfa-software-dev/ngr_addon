@@ -1,5 +1,7 @@
+from email.policy import default
+
 from odoo import fields, models, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError,ValidationError
 
 
 class SaleOrder(models.Model):
@@ -13,7 +15,10 @@ class SaleOrder(models.Model):
         ('6', 'Amazon'),
         ('7', 'MediaMarkt'),
     ]
-    
+
+    to_market_place = fields.Boolean(
+        help='Activate this field to associate the order with a marketplace. If not activated, the order will remain a standard Odoo order.')
+
     market_place = fields.Selection(MARKETPLACE_CHOICES, string='Marketplace')
 
     journal_id = fields.Many2one(comodel_name='account.journal')
@@ -23,7 +28,6 @@ class SaleOrder(models.Model):
         result = super(SaleOrder, self).action_confirm()
 
         for order in self:
-            if order.market_place:
                 order._process_marketplace_order()
                 
         return result
@@ -32,19 +36,22 @@ class SaleOrder(models.Model):
         """Process marketplace order by creating invoice with appropriate journal."""
         marketplace_name = dict(self.MARKETPLACE_CHOICES).get(self.market_place)
         journal = self._find_marketplace_journal(marketplace_name)
+
         
-        if not journal:
+        if not journal and  self.to_market_place:
             raise UserError(_(
                 "Failed to create invoice. "
                 f"Please create a sales journal with name '{marketplace_name}' in Accounting."
             ))
-            
-        self.journal_id = journal
+
+        self.journal_id = journal if self.to_market_place else False
         
         # MediaMarkt (marketplace '7') doesn't auto-create invoices
         if self.market_place != '7':
             invoices = self._create_invoices()
-            invoices.action_post()
+            # only Post Marketplaces Invoices
+            if self.to_market_place :
+                invoices.action_post()
     
     def _find_marketplace_journal(self, marketplace_name):
         """Find the appropriate journal for the marketplace.
@@ -63,11 +70,31 @@ class SaleOrder(models.Model):
     def _prepare_invoice(self):
         """Override to set the marketplace journal when creating invoice."""
         invoice_vals = super()._prepare_invoice()
-        
+
         # Use journal from context or sale order
         if self.env.context.get('default_journal_id'):
             invoice_vals['journal_id'] = self.env.context.get('default_journal_id')
         elif self.journal_id:
             invoice_vals['journal_id'] = self.journal_id.id
-            
+
         return invoice_vals
+
+
+
+    @api.constrains('state')
+    def check_market_place(self):
+        for rec in self :
+            if not rec.market_place and rec.state == 'sale' and rec.to_market_place:
+                raise ValidationError(
+                    _('Marketplace field is required.'))
+
+
+    @api.onchange('to_market_place')
+    def reset_marketplace(self):
+
+        for rec in self :
+            if not rec.to_market_place:
+                rec.market_place = False
+
+
+

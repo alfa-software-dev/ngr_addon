@@ -242,7 +242,7 @@ class StockPicking(models.Model):
         warehouse = self.picking_type_id.warehouse_id
 
         if not warehouse.nve_prefix:
-            raise ValidationError(_('NVE prefix does not exist. Please configure it in the warehouse settings.'))
+            raise ValidationError(_('NVE preInventory5fix does not exist. Please configure it in the warehouse settings.'))
         if not warehouse.gln:
             raise ValidationError(_('GLN does not exist. Please configure it in the warehouse settings.'))
 
