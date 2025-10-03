@@ -6,8 +6,8 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='payment_term_id']" position="after">
                 <field name="market_place" invisible="1"/>
-                <field name="to_market_place" string="To Marketplace" invisible="state=='sale' or state=='cancelled'"/>
-                <field name="market_place" string="Marketplace" readonly="state=='sale' or state=='cancelled' " invisible="not to_market_place and not market_place "/>
+                <field name="to_market_place" string="To Marketplace" invisible="state=='sale' or state=='cancel'"/>
+                <field name="market_place" string="Marketplace" readonly="state=='sale' or state=='cancel' " invisible="not to_market_place and not market_place "/>
             </xpath>
         </field>
     </record>
