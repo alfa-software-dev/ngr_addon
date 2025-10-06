@@ -13,7 +13,8 @@ class SaleOrder(models.Model):
         ('4', 'OTTO'),
         ('5', 'Ebay'),
         ('6', 'Amazon'),
-        ('7', 'MediaMarkt'),
+        ('7', 'MediamarktSarurn'),
+        ('8', 'Mediamarkt Marketplace'),
     ]
 
     to_market_place = fields.Boolean(
