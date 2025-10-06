@@ -20,10 +20,10 @@ class AccountJournal(models.Model):
         help='Enable automatic NVE generation for stock pickings related to sales orders using this journal'
     )
 
-    invoice_name = fields.Char(help='This name will appear on the invoice after the shortcode.')
+    invoice_name = fields.Char(help='This name will appear on the invoice before the shortcode.')
     credit_note_name = fields.Char(
         string='Credit Note Name',
-        help='This name will appear on the credit note after the shortcode.'
+        help='This name will appear on the credit note before the shortcode.'
     )
 
     def unlink(self):
