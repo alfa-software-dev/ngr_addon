@@ -13,7 +13,7 @@ class SaleOrder(models.Model):
         ('4', 'OTTO'),
         ('5', 'Ebay'),
         ('6', 'Amazon'),
-        ('7', 'MediamarktSarurn'),
+        ('7', 'MediamarktSaturn'),
         ('8', 'Mediamarkt Marketplace'),
     ]
 
