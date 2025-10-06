@@ -18,7 +18,7 @@ class SaleOrder(models.Model):
     ]
 
     to_market_place = fields.Boolean(
-        help='Activate this field to associate the order with a marketplace. If not activated, the order will remain a standard Odoo order.')
+        help='Activate this field to associate the order with a marketplace. If not activated, the order will remain a standard Odoo order.',default=True)
 
     market_place = fields.Selection(MARKETPLACE_CHOICES, string='Marketplace')
 
