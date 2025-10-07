@@ -9,6 +9,9 @@
             <xpath expr="//field[@name='location_id']" position="after">
                 <field name="nve"/>
             </xpath>
+            <xpath expr="//field[@name='pack_date']" position="after">
+                <field name="tracking_ref"/>
+            </xpath>
             <xpath expr="//field[@name='quantity']" position="after">
                 <field name="packaging_weight"/>
                 <field name="net_weight"/>

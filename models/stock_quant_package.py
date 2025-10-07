@@ -12,6 +12,11 @@ class StockQuantPackage(models.Model):
                                 domain=['|', ('quantity', '!=', 0), ('reserved_quantity', '!=', 0)])
     picking_id = fields.Many2one(comodel_name='stock.picking' , string='Delivery Ref',readonly=True)
     picking_type_code  = fields.Char(related='package_type_id.barcode' , store=True)
+    tracking_ref = fields.Char(copy=False,index=True)
+    _sql_constraints = [
+        ('name_tracking_ref', 'unique (tracking_ref)', "Tracking number should not be repeated."),
+    ]
+
     def unpack(self):
         rtn = super(StockQuantPackage,self).unpack()
         self.nve = False
