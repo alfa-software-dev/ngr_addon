@@ -1,15 +1,15 @@
 # NGR Customizations (Odoo 18)
 
-Comprehensive marketplace and logistics enhancements for NGR Dynamic Solution GmbH. The module streamlines the order-to-ship process across multiple marketplaces, automates invoice creation/posting and emailing, and generates GS1-compliant NVE shipping labels.
+Comprehensive marketplace and logistics enhancements for NGR Dynamic Solution GmbH. The module streamlines the order-to-ship process across multiple marketplaces (related to Adlerdo), automates invoice creation/posting and emailing, and generates GS1-compliant NVE shipping labels.
 
 ## Overview
 
 This module adds:
-- Marketplace-aware sales processing (Shopify, Kaufland, OTTO, eBay, Amazon, MediaMarkt variants).
+- Marketplace- required fields Related to Adlerdo (Shopify, Kaufland, OTTO, eBay, Amazon, MediaMarkt).
 - Automatic invoice creation and posting from sales orders depending on marketplace rules.
 - Journal-driven invoice/credit-note naming with per-journal sequences.
-- Multilingual, branded invoice report (DE/EN)  and EAN column.
-- NVE (Nummer der Versandeinheit) generation per package at delivery validation with Code128 barcode labels.
+- Multilingual, branded invoice report (DE/EN)  and  Adding EAN column.
+- NVE  generation per package at delivery validation with Code128 barcode labels.
 
 Author: TecSee GmbH  |  Website: https://tecsee.de/de/
 
