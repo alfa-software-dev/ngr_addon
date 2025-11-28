@@ -18,7 +18,7 @@ class SaleOrder(models.Model):
     ]
 
     to_market_place = fields.Boolean(
-        help='Activate this field to associate the order with a marketplace. If not activated, the order will remain a standard Odoo order.',default=True)
+        help='Activate this field to associate the order with a marketplace. If not activated, the order will remain a standard Odoo order.',default=False)
 
     market_place = fields.Selection(MARKETPLACE_CHOICES, string='Marketplace',required=False)
 
@@ -48,7 +48,7 @@ class SaleOrder(models.Model):
         self.journal_id = journal if self.to_market_place else False
         
         # MediaMarkt (marketplace '7') doesn't auto-create invoices
-        if self.market_place != '7':
+        if self.market_place != '7' and self.to_market_place:
             invoices = self._create_invoices()
             # only Post Marketplaces Invoices
             if self.to_market_place :
@@ -81,6 +81,13 @@ class SaleOrder(models.Model):
         return invoice_vals
 
 
+
+    @api.constrains('state')
+    def check_market_place(self):
+        for rec in self :
+            if   not rec.market_place and rec.state == 'sale' and rec.to_market_place :
+                raise ValidationError(
+                    _('Marketplace field is required.'))
 
 
     @api.onchange('to_market_place')
