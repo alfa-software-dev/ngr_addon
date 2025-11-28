@@ -20,7 +20,7 @@ class SaleOrder(models.Model):
     to_market_place = fields.Boolean(
         help='Activate this field to associate the order with a marketplace. If not activated, the order will remain a standard Odoo order.',default=True)
 
-    market_place = fields.Selection(MARKETPLACE_CHOICES, string='Marketplace')
+    market_place = fields.Selection(MARKETPLACE_CHOICES, string='Marketplace',required=False)
 
     journal_id = fields.Many2one(comodel_name='account.journal')
 
@@ -81,13 +81,6 @@ class SaleOrder(models.Model):
         return invoice_vals
 
 
-
-    @api.constrains('state')
-    def check_market_place(self):
-        for rec in self :
-            if not rec.market_place and rec.state == 'sale' and rec.to_market_place:
-                raise ValidationError(
-                    _('Marketplace field is required.'))
 
 
     @api.onchange('to_market_place')
