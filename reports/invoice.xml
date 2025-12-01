@@ -88,11 +88,25 @@
                 <t t-set="right_offset" t-value="'65px' if docs.partner_id.lang == 'de_DE' else '45px'"/>
                 <div t-att-style="'float:right;position:relative;right:%s' % right_offset">
                     <div style="text-align:left;margin-bottom:20pt;font-size:10pt;">
-                        Mainzer Str. 3<br/>
-                        55299 Nackenheim<br/>
-                        info@dyn-solution.de<br/>
-                        <t t-out="lang_template['title'][2]"/><br/>
-                        <t t-out="lang_template['title'][3]"/><br/>
+                        <t t-out="doc.company_id.street"/>
+                        <br/>
+                        <span t-if="doc.company_id.zip or doc.company_id.city">
+                            <t t-out="doc.company_id.zip"/>
+                            <t t-out="doc.company_id.city"/>
+                        </span>
+                        <br/>
+                        <span t-if="doc.company_id.email">
+                            <t t-out="doc.company_id.email"/>
+                            <br/>
+                        </span>
+                        <span t-if="lang_template['title'][2]">
+                            <t t-out="lang_template['title'][2]"/>
+                            <br/>
+                        </span>
+                        <span t-if="lang_template['title'][3]">
+                            <t t-out="lang_template['title'][3]"/>
+                            <br/>
+                        </span>
                         <br/>
                     </div>
                 </div>
@@ -148,7 +162,20 @@
                         <!-- Address Header -->
                         <div style="margin-bottom: 30pt;">
                             <p style="font-size: 10pt; margin-bottom: 5pt;">
-                                NGR Dynamic Solution GmbH | Mainzer Str. 3 | 55299 Nackenheim
+                                NGR Dynamic Solution GmbH
+                                <span t-if="doc.company_id.street">|
+                                    <t t-out="doc.company_id.street"/>
+                                </span>
+                                <span t-if="doc.company_id.zip or doc.company_id.city ">|</span>
+
+                                <span t-if="doc.company_id.zip">
+                                    <t t-out="doc.company_id.zip"/>
+                                </span>
+                                <span t-if="doc.company_id.city">
+                                    <t t-out="doc.company_id.city"/>
+                                </span>
+
+
                             </p>
 
                             <!-- Two column layout -->
@@ -157,10 +184,15 @@
                                     <td style="width: 50%; vertical-align: top;">
                                         <!-- Customer Address -->
                                         <div style="font-size: 11pt;">
-                                            <t t-out="doc.partner_id.name"/><br/>
-                                            <t t-out="doc.partner_id.street"/><br/>
+                                            <t t-out="doc.partner_id.name"/>
+                                            <br/>
+                                            <t t-out="doc.partner_id.street"/>
+                                            <br/>
                                             <t t-out="doc.partner_id.zip"/>
-                                            <t t-if="doc.partner_id.city"><t t-out="doc.partner_id.city"/></t><br/>
+                                            <t t-if="doc.partner_id.city">
+                                                <t t-out="doc.partner_id.city"/>
+                                            </t>
+                                            <br/>
                                         </div>
                                     </td>
                                 </tr>
@@ -173,26 +205,37 @@
                             <t t-set="lang_template" t-value="doc.get_invoice_template_based_on_lang()"/>
                             <t t-set="right_offset" t-value="'-5px' if docs.partner_id.lang == 'de_DE' else '9px'"/>
                             <t t-if="doc.move_type == 'out_refund'">
-                            <t t-set="right_offset" t-value="'-2px'"/>
+                                <t t-set="right_offset" t-value="'-2px'"/>
                             </t>
 
                             <br/>
                             <div t-att-style="'float:right;position:relative;right:%s;margin-bottom:20pt;margin-top:20pt'%right_offset">
                                 <div style="text-align:left;font-size:10pt;">
                                     <t t-if="doc.move_type == 'out_invoice'">
-                                        <t t-out="lang_template['invoice_details'][0]"/> :<t
-                                            t-out="doc.get_invoice_date()"/><br/>
+                                        <t t-out="lang_template['invoice_details'][0]"/>
+                                        :
+                                        <t
+                                                t-out="doc.get_invoice_date()"/>
+                                        <br/>
                                     </t>
                                     <t t-if="doc.move_type == 'out_refund'">
-                                        <t t-out="lang_template['invoice_details'][1]"/> :<t
-                                            t-out="doc.get_invoice_date()"/><br/>
+                                        <t t-out="lang_template['invoice_details'][1]"/>
+                                        :
+                                        <t
+                                                t-out="doc.get_invoice_date()"/>
+                                        <br/>
                                     </t>
-                                    <t t-out="lang_template['invoice_details'][2]"/>.: <t
-                                        t-out="doc.invoice_origin or ''"/><br/>
-                                    <t t-out="lang_template['invoice_details'][3]"/>: <t
-                                        t-out="doc.get_invoice_date()"/><br/>
-                                    <t t-out="lang_template['invoice_details'][4]"/>: <t
-                                        t-out="doc.picking_id.name"/>
+                                    <t t-out="lang_template['invoice_details'][2]"/>.:
+                                    <t
+                                            t-out="doc.invoice_origin or ''"/>
+                                    <br/>
+                                    <t t-out="lang_template['invoice_details'][3]"/>:
+                                    <t
+                                            t-out="doc.get_invoice_date()"/>
+                                    <br/>
+                                    <t t-out="lang_template['invoice_details'][4]"/>:
+                                    <t
+                                            t-out="doc.picking_id.name"/>
                                     <br/>
                                 </div>
                             </div>
@@ -202,10 +245,14 @@
 
                         <div style="margin: 30pt 0 20pt 0;">
                             <t t-if="doc.move_type == 'out_invoice'">
-                                <h5 style="font-weight: bold;"><t t-out="doc.name"/></h5>
+                                <h5 style="font-weight: bold;">
+                                    <t t-out="doc.name"/>
+                                </h5>
                             </t>
                             <t t-if="doc.move_type == 'out_refund'">
-                                <h5 style="font-weight: bold;"><t t-out="doc.name"/></h5>
+                                <h5 style="font-weight: bold;">
+                                    <t t-out="doc.name"/>
+                                </h5>
                             </t>
                         </div>
 
@@ -213,17 +260,27 @@
                         <table class="invoice-table">
                             <thead>
                                 <tr>
-                                    <th><t t-out="lang_template['headers'][0]"/></th>
-                                    <th><t t-out="lang_template['headers'][1]"/></th>
-                                    <th><t t-out="lang_template['headers'][2]"/></th>
+                                    <th>
+                                        <t t-out="lang_template['headers'][0]"/>
+                                    </th>
+                                    <th>
+                                        <t t-out="lang_template['headers'][1]"/>
+                                    </th>
+                                    <th>
+                                        <t t-out="lang_template['headers'][2]"/>
+                                    </th>
                                     <th>
                                         <t t-out="lang_template['headers'][3]"/>
                                     </th>
                                     <th>EAN</th>
-                                    <th style="text-align: right;"><t
-                                            t-out="lang_template['headers'][4]"/></th>
-                                    <th style="text-align: right;"><t
-                                            t-out="lang_template['headers'][5]"/></th>
+                                    <th style="text-align: right;">
+                                        <t
+                                                t-out="lang_template['headers'][4]"/>
+                                    </th>
+                                    <th style="text-align: right;">
+                                        <t
+                                                t-out="lang_template['headers'][5]"/>
+                                    </th>
 
                                 </tr>
                             </thead>
@@ -232,24 +289,30 @@
                                 <t t-set="tax_name" t-value="doc.invoice_line_ids[0].tax_ids.name"/>
                                 <t t-foreach="doc.invoice_line_ids" t-as="line">
                                     <tr>
-                                        <td><t t-out="line_index + 1"/></td>
-                                        <td><t t-out="int(line.quantity)"/></td>
+                                        <td>
+                                            <t t-out="line_index + 1"/>
+                                        </td>
+                                        <td>
+                                            <t t-out="int(line.quantity)"/>
+                                        </td>
                                         <td>Stück</td>
                                         <td>
                                             <t t-out="line.product_id.name"/>
                                         </td>
-                                         <td>
-                                           <span t-if="line.product_id.barcode">
-                                               <t t-out="line.product_id.barcode"/>
-                                           </span>
+                                        <td>
+                                            <span t-if="line.product_id.barcode">
+                                                <t t-out="line.product_id.barcode"/>
+                                            </span>
                                         </td>
                                         <td style="text-align: right;">
-                                            <t t-if="doc.move_type == 'out_refund'">-</t><t
-                                                t-out="doc.item_price_with_tax(line)"/>
+                                            <t t-if="doc.move_type == 'out_refund'">-</t>
+                                            <t
+                                                    t-out="doc.item_price_with_tax(line)"/>
                                         </td>
                                         <td style="text-align: right;">
-                                            <t t-if="doc.move_type == 'out_refund'">-</t><t
-                                                t-out="doc.get_formatted_amount(line.price_total)"/>
+                                            <t t-if="doc.move_type == 'out_refund'">-</t>
+                                            <t
+                                                    t-out="doc.get_formatted_amount(line.price_total)"/>
                                         </td>
 
                                     </tr>
@@ -262,27 +325,38 @@
 
                             <table style="width: 40%; margin-left: auto;border-collapse:separate;">
                                 <tr>
-                                    <td style="padding: 5pt; text-align: left;"><t t-out="lang_template['totals'][0]"/>
-                                        :</td>
+                                    <td style="padding: 5pt; text-align: left;">
+                                        <t t-out="lang_template['totals'][0]"/>
+                                        :
+                                    </td>
                                     <td style="padding: 5pt; text-align: right;">
-                                        <t t-if="doc.move_type == 'out_refund'">-</t><t
-                                            t-out="doc.get_formatted_amount(doc.amount_untaxed)"/>
+                                        <t t-if="doc.move_type == 'out_refund'">-</t>
+                                        <t
+                                                t-out="doc.get_formatted_amount(doc.amount_untaxed)"/>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td style="padding: 5pt; text-align: left;"><t
-                                            t-out="lang_template['totals'][1]"/> <t t-out="tax_name"/> :</td>
+                                    <td style="padding: 5pt; text-align: left;">
+                                        <t
+                                                t-out="lang_template['totals'][1]"/>
+                                        <t t-out="tax_name"/>
+                                        :
+                                    </td>
                                     <td style="padding: 5pt; text-align: right;">
-                                        <t t-if="doc.move_type == 'out_refund'">-</t><t
-                                            t-out="doc.get_formatted_amount(doc.amount_tax)"/>
+                                        <t t-if="doc.move_type == 'out_refund'">-</t>
+                                        <t
+                                                t-out="doc.get_formatted_amount(doc.amount_tax)"/>
                                     </td>
                                 </tr>
                                 <tr style="font-weight: bold; font-size: 12pt;">
-                                    <td style="padding: 5pt; text-align: left;"><t
-                                            t-out="lang_template['totals'][2]"/></td>
+                                    <td style="padding: 5pt; text-align: left;">
+                                        <t
+                                                t-out="lang_template['totals'][2]"/>
+                                    </td>
                                     <td style="padding: 5pt; text-align: right;">
-                                        <t t-if="doc.move_type == 'out_refund'">-</t><t
-                                            t-out="doc.get_formatted_amount(doc.amount_total)"/>
+                                        <t t-if="doc.move_type == 'out_refund'">-</t>
+                                        <t
+                                                t-out="doc.get_formatted_amount(doc.amount_total)"/>
                                     </td>
                                 </tr>
                             </table>
@@ -290,10 +364,14 @@
                         <!-- Payment/Booking Status -->
                         <div style="margin-top: 20pt;">
                             <t t-if="doc.move_type == 'out_invoice'">
-                                <p style="font-size: 11pt;"><t t-out="lang_template['payment_text']"/></p>
+                                <p style="font-size: 11pt;">
+                                    <t t-out="lang_template['payment_text']"/>
+                                </p>
                             </t>
                             <t t-if="doc.move_type == 'out_refund'">
-                                <p style="font-size: 11pt;"><t t-out="lang_template['credit_text']"/></p>
+                                <p style="font-size: 11pt;">
+                                    <t t-out="lang_template['credit_text']"/>
+                                </p>
                             </t>
                         </div>
 
