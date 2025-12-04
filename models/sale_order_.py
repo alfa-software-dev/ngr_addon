@@ -22,7 +22,7 @@ class SaleOrder(models.Model):
 
     market_place = fields.Selection(MARKETPLACE_CHOICES, string='Marketplace',required=False,copy=False)
 
-    journal_id = fields.Many2one(comodel_name='account.journal')
+    journal_id = fields.Many2one(comodel_name='account.journal',copy=False)
 
     def action_confirm(self):
         """Override action_confirm to auto-create and post invoices for marketplace orders."""
