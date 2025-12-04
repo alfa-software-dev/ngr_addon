@@ -18,9 +18,9 @@ class SaleOrder(models.Model):
     ]
 
     to_market_place = fields.Boolean(
-        help='Activate this field to associate the order with a marketplace. If not activated, the order will remain a standard Odoo order.',default=False)
+        help='Activate this field to associate the order with a marketplace. If not activated, the order will remain a standard Odoo order.',default=False,copy=False)
 
-    market_place = fields.Selection(MARKETPLACE_CHOICES, string='Marketplace',required=False)
+    market_place = fields.Selection(MARKETPLACE_CHOICES, string='Marketplace',required=False,copy=False)
 
     journal_id = fields.Many2one(comodel_name='account.journal')
 
